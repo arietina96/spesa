@@ -114,6 +114,7 @@ function updateSupermercatiDatalist() {
 async function initializeApp() {
     await fetchInitialData();
     
+    // Controlla quale pagina è stata caricata
     if (document.getElementById('spesaForm')) {
         initializeSpesaPage();
     } else if (document.getElementById('prodottoForm')) {
@@ -272,7 +273,7 @@ function initializeSpesaPage() {
             const btnModifica = document.createElement('button');
             btnModifica.textContent = '🔍 Dettagli / Modifica';
             btnModifica.className = 'btn-modifica-riepilogo';
-            // Collegamento alla funzione interna
+            // Collegamento alla funzione interna (Fix per l'attivazione)
             btnModifica.onclick = () => caricaRiepilogoPerModifica(riepilogo.data, riepilogo.supermercato); 
             azioniCell.appendChild(btnModifica);
 
@@ -290,8 +291,10 @@ function initializeSpesaPage() {
         // Controlli essenziali per evitare crash (la causa più probabile del problema)
         if (!spesaForm || !messaggioSpesaGestione || !articoliContainer || !supermercatoInput || !dataAcquistoInput || !submitSpesaBtn) {
             console.error("ERRORE CRITICO: Elementi HTML del modulo non trovati. Controlla gli ID!");
-            messaggioSpesaGestione.textContent = "❌ Errore nel caricamento del modulo. Controlla la console F12 per i dettagli.";
-            messaggioSpesaGestione.style.color = 'red';
+            if (messaggioSpesaGestione) {
+                messaggioSpesaGestione.textContent = "❌ Errore nel caricamento del modulo. Controlla la console F12 per i dettagli.";
+                messaggioSpesaGestione.style.color = 'red';
+            }
             return;
         }
 
@@ -344,7 +347,7 @@ function initializeSpesaPage() {
         }
     }
 
-    // Listener Aggiungi da Catalogo (invariato)
+    // Listener Aggiungi da Catalogo
     if (aggiungiDaCatalogoBtn) {
         aggiungiDaCatalogoBtn.addEventListener('click', () => {
             const idSelezionato = selettoreCatalogo.value;
@@ -368,7 +371,7 @@ function initializeSpesaPage() {
         });
     }
 
-    // Listener Aggiungi Articolo Manuale (invariato)
+    // Listener Aggiungi Articolo Manuale
     if (addItemBtn) {
         addItemBtn.addEventListener('click', () => addItemRow());
     }
@@ -443,7 +446,7 @@ function initializeSpesaPage() {
         });
     }
 
-    // Listener Budget (invariato)
+    // Listener Budget
     if (budgetForm) {
         budgetForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -468,7 +471,7 @@ function initializeSpesaPage() {
         });
     }
     
-    // Listener Report (invariato)
+    // Listener Report
     if (ottieniReportBtn) {
         ottieniReportBtn.addEventListener('click', () => {
             const spese = GLOBAL_SPESE;
@@ -529,7 +532,7 @@ function initializeSpesaPage() {
         });
     }
     
-    // --- Funzioni Export/Import (invariate) ---
+    // --- Funzioni Export/Import ---
 
     function exportData() {
         if (!messaggioSpesaGestione) return;
@@ -701,7 +704,7 @@ function initializeCatalogoPage() {
         }
     }
 
-    // Elimina prodotto (MODIFICATO PER ASYNC)
+    // Elimina prodotto
     async function eliminaProdotto(id) {
         if (!messaggioProdotto) return;
 
@@ -719,7 +722,7 @@ function initializeCatalogoPage() {
         }
     }
     
-    // Listener Aggiungi/Modifica Prodotto (MODIFICATO PER ASYNC)
+    // Listener Aggiungi/Modifica Prodotto
     if (prodottoForm) {
         prodottoForm.addEventListener('submit', async (e) => {
             e.preventDefault();

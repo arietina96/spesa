@@ -5,15 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spesa Semplificata (JSON Local)</title>
     <style>
-        /* CSS Basi */
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f0f2f5; }
-        .container { max-width: 800px; margin: 20px auto; background-color: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { color: #1c7a40; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; margin-bottom: 20px; }
-        h3 { color: #3b3b3b; margin-top: 25px; border-left: 5px solid #007bff; padding-left: 10px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        input[type="date"], input[type="number"], input[type="text"], select {
-            width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px;
+        /* Nuovi Colori (Stile Kawaii / Romantico) */
+        :root {
+            --color-background: #fdf5f6; /* Rosa molto chiaro, quasi bianco */
+            --color-main: #d1b4b4; /* Rosa antico / Cipria */
+            --color-accent: #a8dadc; /* Verde pastello chiaro / Menta */
+            --color-text: #4a4a4a; /* Grigio scuro morbido */
+            --color-button-submit: #ffadad; /* Rosa chiaro per i pulsanti principali */
+            --color-button-secondary: #c2f970; /* Verde chiaro per i pulsanti secondari */
         }
+
+        /* CSS Basi con Sfondo Immagine */
+        body { 
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* Font giocoso */
+            margin: 20px; 
+            /* Sfondo Immagine Caricata */
+            background-image: url('wp11935639.jpg'); 
+            background-size: cover; 
+            background-repeat: no-repeat; 
+            background-attachment: fixed; 
+            background-position: center center; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 20px auto; 
+            /* Sfondo bianco leggermente trasparente (90% di opacità) */
+            background-color: rgba(255, 255, 255, 0.9); 
+            padding: 25px; 
+            border-radius: 20px; /* Bordi più arrotondati */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1); 
+        }
+        h2 { 
+            color: var(--color-main); 
+            border-bottom: 3px dashed var(--color-accent); /* Linea a trattini per un effetto cartoon */
+            padding-bottom: 8px; 
+            margin-bottom: 20px; 
+            text-shadow: 1px 1px 2px rgba(255, 173, 173, 0.5); /* Ombra rosa leggera */
+        }
+        h3 { 
+            color: var(--color-text); 
+            margin-top: 25px; 
+            border-left: 8px solid var(--color-main); /* Barra laterale rosa antico */
+            padding-left: 10px; 
+            border-radius: 4px;
+            background-color: rgba(255, 173, 173, 0.1); /* Sfondo molto leggero */
+        }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+            color: var(--color-text); 
+        }
+        input[type="date"], input[type="number"], input[type="text"], select {
+            width: 100%; 
+            padding: 10px; 
+            box-sizing: border-box; 
+            border: 2px solid var(--color-accent); /* Bordo verde pastello */
+            border-radius: 12px; /* Bordi molto arrotondati */
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: var(--color-main); /* Bordo rosa al focus */
+            outline: none;
+        }
+
         /* Layout per le righe di spesa */
         .item-row { 
             display: grid; 
@@ -21,35 +76,126 @@
             gap: 10px; 
             margin-bottom: 10px; 
             padding: 10px; 
-            border: 1px dotted #ccc; 
-            border-radius: 6px; 
+            border: 1px dashed var(--color-accent); 
+            border-radius: 10px; 
             align-items: center; 
+            background-color: #ffffff;
         }
-        .item-row button { cursor: pointer; background-color: #dc3545; color: white; border: none; border-radius: 6px; height: 40px; }
+        .item-row button { 
+            cursor: pointer; 
+            background-color: #ffadad; /* Rosa per l'eliminazione */
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            height: 40px;
+            box-shadow: 0 3px var(--color-main); /* Ombra button */
+            transform: translateY(-2px);
+        }
+        .item-row button:active {
+            box-shadow: 0 1px var(--color-main);
+            transform: translateY(0);
+        }
         
-        button { padding: 10px 15px; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold; }
-        #addItemBtn { background-color: #1c7a40; }
-        #submitSpesaBtn { background-color: #007bff; }
-        #submitBudgetBtn { background-color: #ffc107; color: #333; }
-        #ottieniReportBtn { background-color: #28a745; }
-        #gestisciCatalogoBtn { background-color: #0d6efd; }
+        button { 
+            padding: 12px 18px; 
+            color: var(--color-text); 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            font-weight: bold; 
+            text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
+            transition: all 0.2s;
+            box-shadow: 0 4px var(--color-main); /* Ombra 3D */
+        }
         
-        .btn-modifica-spesa { background-color: #ffc107; color: #333; }
-        .btn-elimina-spesa { background-color: #dc3545; }
+        /* Pulsanti principali */
+        #addItemBtn, #submitSpesaBtn, #submitBudgetBtn, #ottieniReportBtn, #gestisciCatalogoBtn, #exportDataBtn, #importDataBtn {
+            color: white; /* Testo bianco sui pulsanti colorati */
+            text-shadow: none;
+            box-shadow: 0 4px #d39292;
+        }
         
-        #messaggioStato, #messaggioBudget, #messaggioSpesaGestione { margin-top: 15px; padding: 10px; border-radius: 4px; }
-        #messaggioSpesaGestione { background-color: #e9ecef; }
+        #addItemBtn { background-color: var(--color-accent); box-shadow: 0 4px #87c7ca; }
+        #submitSpesaBtn { background-color: var(--color-button-submit); }
+        #submitBudgetBtn { background-color: #ffadad; } 
+        #ottieniReportBtn { background-color: #c2f970; box-shadow: 0 4px #a9d45a; }
+        #gestisciCatalogoBtn { background-color: #d1b4b4; box-shadow: 0 4px #b89a9a; }
+        #exportDataBtn { background-color: #87c7ca; box-shadow: 0 4px #65b0b3; }
+        #importDataBtn { background-color: #ff6961; box-shadow: 0 4px #cc544c; }
         
-        .report-section { background-color: #f9f9f9; padding: 15px; border-radius: 6px; margin-top: 15px; }
+        button:hover {
+            opacity: 0.85;
+        }
+        button:active {
+            box-shadow: 0 2px var(--color-main);
+            transform: translateY(2px);
+        }
+        
+        .btn-modifica-riepilogo { 
+            background-color: var(--color-accent); 
+            color: var(--color-text); 
+            box-shadow: none;
+            padding: 5px 10px;
+            margin: 5px 0;
+        }
+        .btn-elimina-gruppo { 
+            background-color: var(--color-button-submit);
+            color: white; 
+            box-shadow: none;
+            padding: 5px 10px;
+            margin: 5px 0;
+        }
+        
+        #messaggioStato, #messaggioBudget, #messaggioSpesaGestione { 
+            margin-top: 15px; 
+            padding: 10px; 
+            border-radius: 10px; 
+            border: 1px solid var(--color-accent);
+        }
+        #messaggioSpesaGestione { background-color: #fff6f8; } /* Sfondo rosa chiaro */
+        
+        .report-section { 
+            background-color: #fff6f8; 
+            padding: 15px; 
+            border-radius: 15px; 
+            margin-top: 15px; 
+            border: 2px dashed var(--color-main);
+        }
+        
+        /* Stile tabella spese storiche */
+        #speseTable { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0 5px; 
+            margin-top: 15px; 
+        }
+        #speseTable th, #speseTable td { 
+            border: none; 
+            padding: 10px; 
+            text-align: left; 
+        }
+        #speseTable th { 
+            background-color: var(--color-main); 
+            color: white; 
+            font-size: 1.1em;
+        }
+        #speseTable thead tr th:first-child { border-top-left-radius: 10px; }
+        #speseTable thead tr th:last-child { border-top-right-radius: 10px; }
+
+        #speseTable tbody tr {
+            background-color: #fff;
+            border: 1px solid var(--color-accent);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        #speseTable tbody tr:hover {
+            background-color: #ffe6e6; /* Effetto hover romantico */
+        }
         
         .catalogo-select-row { display: flex; gap: 10px; align-items: flex-end; }
         .catalogo-select-row select { flex: 1; }
         .catalogo-select-row button { flex: 0 0 200px; }
-        
-        /* Stile tabella spese storiche */
-        #speseTable { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        #speseTable th, #speseTable td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        #speseTable th { background-color: #e9ecef; }
     </style>
 </head>
 <body>

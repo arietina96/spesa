@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spesa Semplificata (JSON Local)</title>
+    <style>
+        /* CSS Basi */
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f0f2f5; }
+        .container { max-width: 800px; margin: 20px auto; background-color: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { color: #1c7a40; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; margin-bottom: 20px; }
+        h3 { color: #3b3b3b; margin-top: 25px; border-left: 5px solid #007bff; padding-left: 10px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input[type="date"], input[type="number"], input[type="text"], select {
+            width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px;
+        }
+        /* Layout per le righe di spesa */
+        .item-row { 
+            display: grid; 
+            grid-template-columns: 3fr 1.5fr 1.5fr 1fr 1.5fr 0.5fr; 
+            gap: 10px; 
+            margin-bottom: 10px; 
+            padding: 10px; 
+            border: 1px dotted #ccc; 
+            border-radius: 6px; 
+            align-items: center; 
+        }
+        .item-row button { cursor: pointer; background-color: #dc3545; color: white; border: none; border-radius: 6px; height: 40px; }
+        
+        button { padding: 10px 15px; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        #addItemBtn { background-color: #1c7a40; }
+        #submitSpesaBtn { background-color: #007bff; }
+        #submitBudgetBtn { background-color: #ffc107; color: #333; }
+        #ottieniReportBtn { background-color: #28a745; }
+        #gestisciCatalogoBtn { background-color: #0d6efd; }
+        
+        .btn-modifica-spesa { background-color: #ffc107; color: #333; }
+        .btn-elimina-spesa { background-color: #dc3545; }
+        
+        #messaggioStato, #messaggioBudget, #messaggioSpesaGestione { margin-top: 15px; padding: 10px; border-radius: 4px; }
+        #messaggioSpesaGestione { background-color: #e9ecef; }
+        
+        .report-section { background-color: #f9f9f9; padding: 15px; border-radius: 6px; margin-top: 15px; }
+        
+        .catalogo-select-row { display: flex; gap: 10px; align-items: flex-end; }
+        .catalogo-select-row select { flex: 1; }
+        .catalogo-select-row button { flex: 0 0 200px; }
+        
+        /* Stile tabella spese storiche */
+        #speseTable { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        #speseTable th, #speseTable td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        #speseTable th { background-color: #e9ecef; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🛒 Registra Nuova Spesa</h2>
+
+        <button type="button" id="gestisciCatalogoBtn" onclick="window.open('catalogo.html', '_blank')">
+            ⚙️ Vai a Gestione Catalogo Prodotti
+        </button>
+        
+        <hr>
+        
+        <form id="spesaForm">
+            <input type="hidden" id="spesaIdModifica"> 
+            
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1;">
+                    <label for="dataAcquisto">Data:</label>
+                    <input type="date" id="dataAcquisto" required>
+                </div>
+                <div style="flex: 1;">
+                    <label for="supermercato">Supermercato:</label>
+                    <input type="text" id="supermercato" list="supermercatiList" placeholder="Es. Esselunga, Coop..." required>
+                    <datalist id="supermercatiList"></datalist>
+                </div>
+            </div>
+            
+            <hr>
+
+            <h3>➕ Aggiungi Articolo</h3>
+            <div class="catalogo-select-row">
+                <select id="selettoreCatalogo">
+                    <option value="">-- Seleziona un Prodotto dal Catalogo --</option>
+                </select>
+                <button type="button" id="aggiungiDaCatalogoBtn">➕ Aggiungi alla Spesa</button>
+            </div>
+            
+            <hr>
+            
+            <div id="articoliContainer">
+                </div>
+            
+            <button type="button" id="addItemBtn">➕ Aggiungi Articolo Manuale</button>
+
+            <hr>
+
+            <p>Totale Provvisorio: <strong id="totaleProvvisorio">0.00 €</strong></p>
+            
+            <button type="submit" id="submitSpesaBtn">💾 Registra Spesa Totale</button>
+            <div id="messaggioStato"></div>
+        </form>
+    </div>
+    
+    
+    <div class="container">
+        <h2>🗓️ Modifica / Elimina Spese Storiche</h2>
+<div style="margin-bottom: 15px; display: flex; gap: 10px;">
+    <button type="button" id="exportDataBtn" style="background-color: #009688;">⬇️ Esporta tutti i Dati (.json)</button>
+    <label for="importFileInput" style="flex-grow: 1;">
+        <input type="file" id="importFileInput" accept=".json" style="display: none;">
+        <button type="button" id="importDataBtn" style="background-color: #f44336; width: 100%;">⬆️ Importa Dati da .json</button>
+    </label>
+</div>
+        <div id="messaggioSpesaGestione">Seleziona una spesa per modificarla o eliminarla.</div>
+        
+        <table id="speseTable">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Supermercato</th>
+                    <th>Totale</th>
+                    <th>Articoli</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody id="speseBody">
+                </tbody>
+        </table>
+    </div>
+    
+    
+    <div class="container">
+        <h2>🎯 Imposta Budget Mensile</h2>
+        <form id="budgetForm">
+            <div>
+                <label for="budgetMese">Mese:</label>
+                <input type="number" id="budgetMese" value="11" min="1" max="12" required style="width: 150px; display: inline-block;">
+                
+                <label for="budgetAnno">Anno:</label>
+                <input type="number" id="budgetAnno" value="2025" min="2020" required style="width: 150px; display: inline-block;">
+            </div>
+            <div>
+                <label for="limiteBudget">Limite Mensile (€):</label>
+                <input type="number" id="limiteBudget" step="0.01" min="0" value="500.00" required>
+            </div>
+            
+            <button type="submit" id="submitBudgetBtn">Imposta / Aggiorna Budget</button>
+            <div id="messaggioBudget"></div>
+        </form>
+    </div>
+    
+    
+    <div class="container">
+        <h2>📈 Report Mensile Spese</h2>
+        <div>
+            <label for="meseReport">Mese:</label>
+            <input type="number" id="meseReport" value="11" min="1" max="12" style="width: 150px; display: inline-block;">
+            
+            <label for="annoReport">Anno:</label>
+            <input type="number" id="annoReport" value="2025" min="2020" style="width: 150px; display: inline-block;">
+        </div>
+        
+        <button type="button" id="ottieniReportBtn">Calcola Report</button>
+
+        <div id="risultatoReport" class="report-section">
+            Seleziona Mese e Anno e clicca 'Calcola Report'.
+        </div>
+    </div>
+
+<script src="app_semplice.js"></script> 
+</body>
+</html>

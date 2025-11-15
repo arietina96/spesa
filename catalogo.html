@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Catalogo Prodotti</title>
+    <style>
+        /* CSS Basi */
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f0f2f5; }
+        .container { max-width: 900px; margin: 20px auto; background-color: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { color: #1c7a40; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input[type="number"], input[type="text"], select {
+            width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px;
+        }
+        button { padding: 10px 15px; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        #submitProdottoBtn { background-color: #0d6efd; }
+        .btn-modifica { background-color: #ffc107; color: #333; margin-right: 5px; }
+        .btn-elimina { background-color: #dc3545; }
+        
+        #messaggioProdotto { margin-top: 15px; padding: 10px; border-radius: 4px; }
+
+        /* Stile Tabella Catalogo */
+        #catalogoTable { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        #catalogoTable th, #catalogoTable td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        #catalogoTable th { background-color: #e9ecef; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🛍️ Gestione Catalogo Prodotti e Categorie</h2>
+
+        <form id="prodottoForm">
+            <input type="hidden" id="prodottoIdModifica">
+
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 2;">
+                    <label for="nomeProdotto">Nome Prodotto:</label>
+                    <input type="text" id="nomeProdotto" placeholder="Es. Latte, Pane integrale..." required>
+                </div>
+                <div style="flex: 1;">
+                    <label for="prezzoBase">Prezzo Base (€):</label>
+                    <input type="number" id="prezzoBase" step="0.01" min="0.01" required>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-top: 15px;">
+                <div style="flex: 1;">
+                    <label for="categoriaProdotto">Categoria:</label>
+                    <select id="categoriaProdotto" required>
+                        <option value="">Seleziona Categoria</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label for="supermercatoCatalogo">Supermercato di Riferimento:</label>
+                    <input type="text" id="supermercatoCatalogo" list="supermercatiList" placeholder="Da dove acquisti di solito" required>
+                    <datalist id="supermercatiList"></datalist>
+                </div>
+            </div>
+            
+            <button type="submit" id="submitProdottoBtn">💾 Aggiungi Nuovo Prodotto</button>
+            <div id="messaggioProdotto"></div>
+        </form>
+
+        <hr>
+
+        <h3>Elenco Prodotti</h3>
+        <table id="catalogoTable">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Prezzo Base</th>
+                    <th>Supermercato</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody id="catalogoBody">
+                </tbody>
+        </table>
+    </div>
+
+<script src="app_semplice.js"></script> 
+</body>
+</html>

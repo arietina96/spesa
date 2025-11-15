@@ -3,82 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Catalogo Prodotti</title>
+    <title>Gestione Catalogo Prodotti e Categorie</title>
     <style>
-        /* CSS Basi */
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f0f2f5; }
-        .container { max-width: 900px; margin: 20px auto; background-color: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { color: #1c7a40; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        input[type="number"], input[type="text"], select {
-            width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px;
+        /* Nuovi Colori (Stile Kawaii / Romantico) */
+        :root {
+            --color-background: #fdf5f6; 
+            --color-main: #d1b4b4; 
+            --color-accent: #a8dadc; 
+            --color-text: #4a4a4a; 
+            --color-button-submit: #ffadad; 
+            --color-button-secondary: #c2f970; 
         }
-        button { padding: 10px 15px; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold; }
-        #submitProdottoBtn { background-color: #0d6efd; }
-        .btn-modifica { background-color: #ffc107; color: #333; margin-right: 5px; }
-        .btn-elimina { background-color: #dc3545; }
-        
-        #messaggioProdotto { margin-top: 15px; padding: 10px; border-radius: 4px; }
 
+        /* CSS Basi con Sfondo Immagine */
+        body { 
+            font-family: 'Comic Sans MS', cursive, sans-serif; 
+            margin: 20px; 
+            /* Sfondo Immagine Caricata */
+            background-image: url('wp11935639.jpg'); 
+            background-size: cover; 
+            background-repeat: no-repeat; 
+            background-attachment: fixed; 
+            background-position: center center; 
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 20px auto; 
+            /* Sfondo bianco leggermente trasparente (90% di opacità) */
+            background-color: rgba(255, 255, 255, 0.9); 
+            padding: 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1); 
+        }
+        h2 { 
+            color: var(--color-main); 
+            border-bottom: 3px dashed var(--color-accent); 
+            padding-bottom: 8px; 
+            margin-bottom: 20px; 
+            text-shadow: 1px 1px 2px rgba(255, 173, 173, 0.5); 
+        }
+        h3 { 
+            color: var(--color-text); 
+            margin-top: 25px; 
+            border-left: 8px solid var(--color-main); 
+            padding-left: 10px; 
+            border-radius: 4px;
+            background-color: rgba(255, 173, 173, 0.1); 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+            color: var(--color-text); 
+        }
+        input[type="number"], input[type="text"], select {
+            width: 100%; 
+            padding: 10px; 
+            box-sizing: border-box; 
+            border: 2px solid var(--color-accent); 
+            border-radius: 12px; 
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: var(--color-main); 
+            outline: none;
+        }
+        
+        /* Stile per il Form Aggiungi/Modifica */
+        .input-group {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px dashed var(--color-main);
+            border-radius: 15px;
+            background-color: #fff6f8; /* Mantenuto un colore solido chiaro per il blocco form */
+        }
+
+        button { 
+            padding: 12px 18px; 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            font-weight: bold; 
+            text-shadow: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px var(--color-main); 
+        }
+        
+        #submitProdottoBtn { 
+            background-color: var(--color-button-submit); 
+            box-shadow: 0 4px #cc9797;
+        }
+        #goBackBtn { 
+            background-color: var(--color-accent); 
+            box-shadow: 0 4px #87c7ca;
+        }
+        
+        button:hover {
+            opacity: 0.85;
+        }
+        button:active {
+            box-shadow: 0 2px var(--color-main);
+            transform: translateY(2px);
+        }
+        
+        #messaggioProdotto { 
+            margin-top: 15px; 
+            padding: 10px; 
+            border-radius: 10px; 
+            border: 1px solid var(--color-accent);
+            background-color: #fff6f8;
+        }
+        
         /* Stile Tabella Catalogo */
-        #catalogoTable { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        #catalogoTable th, #catalogoTable td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        #catalogoTable th { background-color: #e9ecef; }
+        #catalogoTable { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0 5px; 
+            margin-top: 20px; 
+        }
+        #catalogoTable th, #catalogoTable td { 
+            border: none; 
+            padding: 10px; 
+            text-align: left; 
+        }
+        #catalogoTable th { 
+            background-color: var(--color-main); 
+            color: white; 
+            font-size: 1.1em;
+        }
+        #catalogoTable thead tr th:first-child { border-top-left-radius: 10px; }
+        #catalogoTable thead tr th:last-child { border-top-right-radius: 10px; }
+
+        #catalogoTable tbody tr {
+            background-color: #fff;
+            border: 1px solid var(--color-accent);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        #catalogoTable tbody tr:hover {
+            background-color: #ffe6e6; 
+        }
+        
+        /* Pulsanti interni alla tabella */
+        .btn-modifica, .btn-elimina {
+            padding: 5px 10px;
+            margin: 2px;
+            font-weight: normal;
+            box-shadow: none;
+            color: var(--color-text);
+        }
+        .btn-modifica { 
+            background-color: var(--color-accent); 
+        }
+        .btn-elimina { 
+            background-color: var(--color-button-submit); 
+            color: white;
+        }
+
     </style>
 </head>
 <body>
 
     <div class="container">
         <h2>🛍️ Gestione Catalogo Prodotti e Categorie</h2>
+        
+        <button type="button" id="goBackBtn" onclick="window.location.href='index_semplice.html'">
+            ⬅️ Torna a Registrazione Spesa
+        </button>
 
-        <form id="prodottoForm">
-            <input type="hidden" id="prodottoIdModifica">
+        <div id="messaggioProdotto">Aggiungi o modifica un prodotto del tuo catalogo qui sotto.</div>
 
-            <div style="display: flex; gap: 15px;">
-                <div style="flex: 2;">
-                    <label for="nomeProdotto">Nome Prodotto:</label>
-                    <input type="text" id="nomeProdotto" placeholder="Es. Latte, Pane integrale..." required>
+        <div class="input-group">
+            <h3>✏️ Aggiungi/Modifica Prodotto</h3>
+            <form id="prodottoForm">
+                <input type="hidden" id="prodottoIdModifica">
+                
+                <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                    <div style="flex: 2;">
+                        <label for="nomeProdotto">Nome Prodotto:</label>
+                        <input type="text" id="nomeProdotto" placeholder="Es. Yogurt greco 0%, Petto di Pollo..." required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="prezzoBase">Prezzo Base (€/Unità):</label>
+                        <input type="number" id="prezzoBase" step="0.01" min="0.01" placeholder="0.00" required>
+                    </div>
                 </div>
-                <div style="flex: 1;">
-                    <label for="prezzoBase">Prezzo Base (€):</label>
-                    <input type="number" id="prezzoBase" step="0.01" min="0.01" required>
-                </div>
-            </div>
-            
-            <div style="display: flex; gap: 15px; margin-top: 15px;">
-                <div style="flex: 1;">
-                    <label for="categoriaProdotto">Categoria:</label>
-                    <select id="categoriaProdotto" required>
-                        <option value="">Seleziona Categoria</option>
-                    </select>
-                </div>
-                <div style="flex: 1;">
-                    <label for="supermercatoCatalogo">Supermercato di Riferimento:</label>
-                    <input type="text" id="supermercatoCatalogo" list="supermercatiList" placeholder="Da dove acquisti di solito" required>
-                    <datalist id="supermercatiList"></datalist>
-                </div>
-            </div>
-            
-            <button type="submit" id="submitProdottoBtn">💾 Aggiungi Nuovo Prodotto</button>
-            <div id="messaggioProdotto"></div>
-        </form>
 
-        <hr>
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label for="categoriaProdotto">Categoria:</label>
+                        <select id="categoriaProdotto" required>
+                            <option value="">-- Seleziona Categoria --</option>
+                            </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="supermercatoCatalogo">Supermercato Riferimento:</label>
+                        <input type="text" id="supermercatoCatalogo" list="supermercatiList" placeholder="Es. Esselunga, Lidl..." required>
+                        <datalist id="supermercatiList"></datalist>
+                    </div>
+                </div>
+                
+                <button type="submit" id="submitProdottoBtn" style="margin-top: 20px;">💾 Aggiungi Nuovo Prodotto</button>
+            </form>
+        </div>
+        
+        <div class="input-group">
+            <h3>📚 Catalogo Prodotti Salvati</h3>
+            <table id="catalogoTable">
+                <thead>
+                    <tr>
+                        <th>Nome Prodotto</th>
+                        <th>Categoria</th>
+                        <th>Prezzo Base</th>
+                        <th>Supermercato Riferimento</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody id="catalogoBody">
+                    </tbody>
+            </table>
+        </div>
 
-        <h3>Elenco Prodotti</h3>
-        <table id="catalogoTable">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Categoria</th>
-                    <th>Prezzo Base</th>
-                    <th>Supermercato</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody id="catalogoBody">
-                </tbody>
-        </table>
     </div>
 
 <script src="app_semplice.js"></script> 
